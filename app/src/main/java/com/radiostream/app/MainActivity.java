@@ -74,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
         setupWebView();
         startRadioService();
         webView.loadUrl(STREAM_URL);
-        findViewById(R.id.refreshButton).setOnClickListener(v -> webView.reload());
     }
 
     private void setupCookies() {
@@ -131,20 +130,15 @@ public class MainActivity extends AppCompatActivity {
                                                            GeolocationPermissions.Callback callback) {
                 callback.invoke(origin, false, false);
             }
-            // File picker per import JSON
             @Override
             public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback,
                                              FileChooserParams params) {
-                if (filePathCallback != null) {
-                    filePathCallback.onReceiveValue(null);
-                }
+                if (filePathCallback != null) filePathCallback.onReceiveValue(null);
                 filePathCallback = callback;
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 intent.setType("application/json");
-                // Permetti anche file con estensione .json generici
-                Intent chooser = Intent.createChooser(intent, "Seleziona file JSON");
-                startActivityForResult(chooser, FILE_PICKER_CODE);
+                startActivityForResult(Intent.createChooser(intent, "Seleziona file JSON"), FILE_PICKER_CODE);
                 return true;
             }
         });
@@ -202,12 +196,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return super.onKeyDown(keyCode, event);
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo info = cm.getActiveNetworkInfo();
-        return info != null && info.isConnected();
     }
 
     @Override
