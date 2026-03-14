@@ -33,5 +33,3 @@
         android:visibility="gone" />
 
 </RelativeLayout>
-Poi in MainActivity.java rimuovi questa riga:
-findViewById(R.id.refreshButton).setOnClickListener(v -> webView.reload());
