@@ -10,9 +10,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -36,25 +34,12 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String STREAM_URL = "https://radioffline.lovable.app";
     private static final int MIC_PERMISSION_CODE = 1001;
-    private static final long AUTO_REFRESH_INTERVAL = 30_000L;
 
     private WebView webView;
     private ProgressBar progressBar;
     private TextView errorView;
     private RadioService radioService;
     private boolean serviceBound = false;
-
-    private final Handler autoRefreshHandler = new Handler(Looper.getMainLooper());
-
-    private final Runnable autoRefreshRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (webView != null && isNetworkAvailable()) {
-                webView.reload();
-            }
-            autoRefreshHandler.postDelayed(this, AUTO_REFRESH_INTERVAL);
-        }
-    };
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -84,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         setupWebView();
         startRadioService();
         webView.loadUrl(STREAM_URL);
-        autoRefreshHandler.postDelayed(autoRefreshRunnable, AUTO_REFRESH_INTERVAL);
     }
 
     private void setupCookies() {
@@ -199,10 +183,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        autoRefreshHandler.removeCallbacks(autoRefreshRunnable);
         CookieManager.getInstance().flush();
         if (serviceBound) { unbindService(serviceConnection); serviceBound = false; }
         webView.destroy();
         super.onDestroy();
     }
-                                                           }
+            }
